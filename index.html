@@ -1,0 +1,14 @@
+---
+layout: home
+title: 柯基犬用品推荐
+---
+
+# 柯基犬用品推荐
+
+欢迎来到柯基犬用品推荐博客！
+
+这里为您推荐优质的柯基犬用品，帮助您更好地照顾您的爱犬。
+
+{% for post in site.posts %}
+- [{{ post.title }}]({{ post.url }}) - {{ post.date | date: "%Y-%m-%d" }}
+{% endfor %}
