@@ -3,76 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>柯基犬用品精选 - 京东优惠</title>
-    <meta name="description" content="精选高佣金京东商品，为柯基犬主人推荐优质用品，点击购买可获得优惠">
+    <title>柯基犬用品推荐 - SEO博客</title>
+    <meta name="description" content="专业柯基犬用品推荐博客，为您推荐优质柯基用品，分享养宠经验">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #f5f5f5; }
-        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 40px 20px; text-align: center; }
-        .header h1 { font-size: 2rem; margin-bottom: 10px; }
-        .header p { opacity: 0.9; }
-        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-        .products { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-        .product-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1); transition: transform 0.3s; }
-        .product-card:hover { transform: translateY(-5px); }
-        .product-image { width: 100%; height: 200px; object-fit: cover; }
-        .product-info { padding: 15px; }
-        .product-title { font-size: 1rem; font-weight: bold; margin-bottom: 10px; color: #333; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .product-price { font-size: 1.5rem; color: #e53935; font-weight: bold; margin-bottom: 5px; }
-        .product-price span { font-size: 0.9rem; color: #999; font-weight: normal; }
-        .commission { color: #4caf50; font-size: 0.9rem; margin-bottom: 10px; }
-        .buy-btn { display: block; width: 100%; padding: 12px; background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%); color: white; text-align: center; text-decoration: none; border-radius: 6px; font-weight: bold; transition: opacity 0.3s; }
-        .buy-btn:hover { opacity: 0.9; }
-        .footer { text-align: center; padding: 40px; color: #666; font-size: 0.9rem; }
-        .loading { text-align: center; padding: 40px; color: #666; }
-        .error { text-align: center; padding: 40px; color: #e53935; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #fafafa; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 60px 20px; text-align: center; }
+        .header h1 { font-size: 2.5rem; margin-bottom: 10px; }
+        .header p { opacity: 0.9; font-size: 1.1rem; }
+        .container { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
+        .article-list { list-style: none; }
+        .article-item { background: white; border-radius: 8px; padding: 25px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: transform 0.2s; }
+        .article-item:hover { transform: translateY(-3px); box-shadow: 0 4px 12px rgba(0,0,0,0.12); }
+        .article-title { font-size: 1.3rem; color: #333; margin-bottom: 10px; }
+        .article-title a { color: #333; text-decoration: none; }
+        .article-title a:hover { color: #667eea; }
+        .article-date { color: #999; font-size: 0.9rem; }
+        .article-excerpt { color: #666; margin-top: 10px; line-height: 1.6; }
+        .footer { text-align: center; padding: 40px; color: #999; font-size: 0.9rem; border-top: 1px solid #eee; margin-top: 40px; }
+        .disclaimer { background: #fff3cd; padding: 15px; border-radius: 8px; margin-bottom: 30px; font-size: 0.9rem; color: #856404; }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>柯基犬用品精选</h1>
-        <p>精选高佣金京东商品，点击购买可获得优惠</p>
+        <h1>柯基犬用品推荐</h1>
+        <p>专业测评，真实分享，帮助你挑选最适合柯基的好物</p>
     </div>
     <div class="container">
-        <div id="products" class="products">
-            <div class="loading">正在加载商品...</div>
+        <div class="disclaimer">
+            本网站包含京东联盟推广链接，点击购买可能会获得佣金，这有助于我们持续产出优质内容。
+        </div>
+        <div id="articles" class="article-list">
+            <div style="text-align:center;color:#999;">加载中...</div>
         </div>
     </div>
     <div class="footer">
-        <p>本页面包含京东联盟推广链接，购买后可获得佣金</p>
+        <p>柯基犬用品推荐 - 专注于柯基用品的真实评测与推荐</p>
+        <p style="margin-top:10px;">如有侵权请联系删除</p>
     </div>
 
     <script>
-        async function loadProducts() {
+        async function loadArticles() {
             try {
-                const response = await fetch('index.json');
-                const data = await response.json();
-                const products = data.products || [];
+                const response = await fetch('_posts/');
+                const text = await response.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(text, 'text/html');
+                const links = doc.querySelectorAll('a[href$=".md"]');
                 
-                const container = document.getElementById('products');
+                const articles = [];
+                links.forEach(link => {
+                    const href = link.getAttribute('href');
+                    if (href && href.includes('-')) {
+                        const filename = href.split('/').pop();
+                        const parts = filename.replace('.md', '').split('-');
+                        if (parts.length >= 3) {
+                            const date = `${parts[0]}-${parts[1]}-${parts[2]}`;
+                            const slug = parts.slice(3).join('-');
+                            articles.push({ date, slug, filename });
+                        }
+                    }
+                });
                 
-                if (products.length === 0) {
-                    container.innerHTML = '<div class="error">暂无商品，请稍后重试</div>';
+                const container = document.getElementById('articles');
+                if (articles.length === 0) {
+                    container.innerHTML = '<div style="text-align:center;color:#999;">暂无文章</div>';
                     return;
                 }
                 
-                container.innerHTML = products.map(p => `
-                    <div class="product-card">
-                        <img src="${p.pic_url}" alt="${p.title}" class="product-image" onerror="this.src='https://via.placeholder.com/280x200?text=No+Image'">
-                        <div class="product-info">
-                            <div class="product-title">${p.title}</div>
-                            <div class="product-price">¥${p.price} <span>元</span></div>
-                            <div class="commission">佣金比例: ${p.commission_rate}%</div>
-                            <a href="${p.click_url}" class="buy-btn" target="_blank" rel="noopener">直达购买</a>
-                        </div>
-                    </div>
+                articles.sort((a, b) => new Date(b.date) - new Date(a.date));
+                
+                container.innerHTML = articles.map(a => `
+                    <li class="article-item">
+                        <h2 class="article-title">
+                            <a href="/${a.slug}.html">${a.slug.replace(/-/g, ' ')}</a>
+                        </h2>
+                        <div class="article-date">${a.date}</div>
+                    </li>
                 `).join('');
             } catch (error) {
-                document.getElementById('products').innerHTML = '<div class="error">加载失败，请刷新重试</div>';
+                document.getElementById('articles').innerHTML = '<div style="text-align:center;color:#999;">加载失败，请刷新重试</div>';
             }
         }
-        
-        loadProducts();
+        loadArticles();
     </script>
 </body>
 </html>
