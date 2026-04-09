@@ -2,7 +2,31 @@
 layout: default
 ---
 
-<h1>{{ page.title }}</h1>
-<p class="post-date">{{ page.date | date: "%Y-%m-%d" }}</p>
+<article class="post">
+    <header class="post-header">
+        <h1 class="post-title">{{ page.title }}</h1>
+        <p class="post-date">{{ page.date | date: "%Y年%m月%d日" }}</p>
+    </header>
+    
+    <div class="post-content">
+        {{ content }}
+    </div>
+    
+    <div class="post-footer">
+        <p class="disclaimer">本文含有推广链接，购买前请仔细考虑</p>
+    </div>
+</article>
 
-{{ content }}
+<style>
+.post { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
+.post-header { text-align: center; margin-bottom: 40px; }
+.post-title { font-size: 2rem; color: #333; margin-bottom: 10px; }
+.post-date { color: #999; font-size: 0.9rem; }
+.post-content { font-size: 1.1rem; line-height: 1.8; color: #333; }
+.post-content p { margin-bottom: 20px; }
+.post-content img { max-width: 100%; border-radius: 8px; margin: 20px 0; }
+.post-content a { color: #667eea; }
+.post-content a:hover { text-decoration: underline; }
+.post-footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; }
+.disclaimer { background: #fff3cd; padding: 15px; border-radius: 8px; font-size: 0.9rem; color: #856404; text-align: center; }
+</style>
