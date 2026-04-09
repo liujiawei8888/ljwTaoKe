@@ -1,4 +1,23 @@
 title: 柯基犬用品推荐
-description: 专业柯基犬用品推荐博客
-baseurl: ''
-url: ''
+email: admin@example.com
+description: >- 
+  专业的柯基犬用品推荐博客，为柯基主人提供最实用的用品推荐。
+baseurl: "/ljwTaoKe"
+url: "https://liujiawei8888.github.io"
+twitter_username: jekyllrb
+github_username: jekyll
+
+markdown: kramdown
+theme: minima
+
+collections:
+  posts:
+    title: Posts
+    output: true
+
+defaults:
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: post
