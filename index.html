@@ -22,7 +22,7 @@
 <body>
     <div class="container">
         <h1>柯基犬用品推荐 - 专业测评分享</h1>
-        <div id="articles" class="article-list"></div>
+        <div id="articles" class="article-list"><p style="text-align:center;color:#999;">加载中...</p></div>
     </div>
     <div class="footer">
         <p>本文含推广链接，购买可获商家补贴</p>
@@ -30,50 +30,75 @@
 
     <script>
     const GITHUB_REPO = 'liujiawei8888/ljwTaoKe';
-    const BASE_URL = 'https://liujiawei8888.github.io/ljwTaoKe';
+    const BASE_URL = 'https://raw.githubusercontent.com/' + GITHUB_REPO + '/main';
     
     async function loadArticles() {
         try {
-            const response = await fetch('https://api.github.com/repos/' + GITHUB_REPO + '/contents/_posts');
-            const files = await response.json();
+            // 获取_posts目录下的文件列表
+            const response = await fetch('https://api.github.com/repos/' + GITHUB_REPO + '/contents/_posts?ref=main');
             
+            if (!response.ok) {
+                throw new Error('API failed');
+            }
+            
+            const files = await response.json();
             const articles = [];
+            
+            // 获取每个MD文件的内容
             for (const f of files) {
                 if (f.name.endsWith('.md')) {
-                    const content = await fetch(f.download_url).then(r => r.text());
-                    const titleMatch = content.match(/title:\s*"([^"]+)"/);
-                    const dateMatch = content.match(/date:\s*(\d{4}-\d{2}-\d{2})/);
-                    
-                    if (titleMatch && dateMatch) {
-                        const parts = f.name.replace('.md', '').split('-');
-                        const slug = parts.slice(3).join('-');
-                        articles.push({ 
-                            title: titleMatch[1], 
-                            date: dateMatch[1],
-                            slug: slug
-                        });
+                    try {
+                        const contentRes = await fetch(f.download_url);
+                        const content = await contentRes.text();
+                        
+                        // 提取title和date
+                        const titleMatch = content.match(/title:\s*"([^"]+)"/);
+                        const dateMatch = content.match(/date:\s*(\d{4}-\d{2}-\d{2})/);
+                        
+                        if (titleMatch && dateMatch) {
+                            // 从文件名提取slug
+                            // 例如: 2026-04-09-宠物用品推荐2026.md -> 宠物用品推荐2026
+                            const parts = f.name.replace('.md', '').split('-');
+                            const slug = parts.length > 3 ? parts.slice(3).join('-') : f.name.replace('.md', '');
+                            
+                            articles.push({ 
+                                title: titleMatch[1], 
+                                date: dateMatch[1],
+                                slug: slug
+                            });
+                        }
+                    } catch (e) {
+                        console.log('Error reading file:', f.name, e);
                     }
                 }
             }
             
+            // 按日期排序
             articles.sort((a, b) => new Date(b.date) - new Date(a.date));
             
-            const html = articles.map(a => `
-                <li class="article-item">
-                    <h2 class="article-title">
-                        <a href="${BASE_URL}/${a.slug}.html">${a.title}</a>
-                    </h2>
-                    <div class="article-date">${a.date}</div>
-                </li>
-            `).join('');
-            
-            document.getElementById('articles').innerHTML = html || '<p style="text-align:center;color:#999;">暂无文章</p>';
+            // 生成HTML
+            if (articles.length > 0) {
+                const html = articles.map(a => `
+                    <li class="article-item">
+                        <h2 class="article-title">
+                            <a href="${BASE_URL}/_posts/${a.slug}.html">${a.title}</a>
+                        </h2>
+                        <div class="article-date">${a.date}</div>
+                    </li>
+                `).join('');
+                document.getElementById('articles').innerHTML = html;
+            } else {
+                document.getElementById('articles').innerHTML = '<p style="text-align:center;color:#999;">暂无文章</p>';
+            }
             
         } catch (e) {
-            document.getElementById('articles').innerHTML = '<p style="text-align:center;color:#999;">加载失败</p>';
+            console.error('Error:', e);
+            document.getElementById('articles').innerHTML = '<p style="text-align:center;color:#999;">加载失败，请稍后重试</p>';
         }
     }
-    loadArticles();
+    
+    // 延迟加载确保页面先渲染
+    setTimeout(loadArticles, 500);
     </script>
 </body>
 </html>
