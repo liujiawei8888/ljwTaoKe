@@ -23,87 +23,72 @@
 <body>
     <div class="container">
         <h1>柯基犬用品推荐 - 专业测评分享</h1>
-        <ul class="article-list" id="articleList">
-            <li class="article-item">
-                <h2 class="article-title"><a href="article-107.html">柯基犬狗粮推荐：热销100万凯锐思狗粮通用型实测</a></h2>
-                <div class="article-date">2026-04-09</div>
-            </li>
-            <li class="article-item">
-                <h2 class="article-title"><a href="article-106.html">柯基犬罐头推荐：麦富迪全价羊奶鲜肉主食罐实测</a></h2>
-                <div class="article-date">2026-04-09</div>
-            </li>
-            <li class="article-item">
-                <h2 class="article-title"><a href="article-105.html">柯基犬狗粮推荐：比乐全年龄段通用犬粮实测</a></h2>
-                <div class="article-date">2026-04-09</div>
-            </li>
-            <li class="article-item">
-                <h2 class="article-title"><a href="article-104.html">柯基犬猫砂推荐：比亿奇膨润土除臭猫砂实测</a></h2>
-                <div class="article-date">2026-04-09</div>
-            </li>
-            <li class="article-item">
-                <h2 class="article-title"><a href="article-103.html">柯基犬用品推荐：图咔拉星球猫砂实测</a></h2>
-                <div class="article-date">2026-04-09</div>
-            </li>
-            <li class="article-item">
-                <h2 class="article-title"><a href="article-102.html">柯基犬用品怎么选：图咔拉星球猫砂实测</a></h2>
-                <div class="article-date">2026-04-09</div>
-            </li>
-            <li class="article-item">
-                <h2 class="article-title"><a href="article-101.html">柯基犬用品哪个牌子好：图咔拉星球猫砂实测</a></h2>
-                <div class="article-date">2026-04-09</div>
-            </li>
-        </ul>
+        <ul class="article-list" id="articleList"></ul>
         <div class="loading" id="loading">加载中...</div>
     </div>
     <div class="footer">
         <p>专注柯基犬用品推荐，实测分享优质商品</p>
     </div>
     <script>
-        // 无限滚动加载
         let page = 1;
         const perPage = 20;
         let loading = false;
-        const loadingEl = document.getElementById('loading');
+        let hasMore = true;
+        let allArticles = [];
         
-        // 模拟文章数据（实际应该从服务器获取）
-        const allArticles = [
-        ];
-        
-        function loadMore() {
-            if (loading || allArticles.length === 0) return;
-            loading = true;
-            loadingEl.style.display = 'block';
-            
-            setTimeout(() => {
-                const start = (page - 1) * perPage;
-                const end = start + perPage;
-                const articles = allArticles.slice(start, end);
-                
-                if (articles.length === 0) {
-                    loadingEl.textContent = '没有更多了';
-                    return;
-                }
-                
-                const list = document.getElementById('articleList');
-                articles.forEach(article => {
-                    const li = document.createElement('li');
-                    li.className = 'article-item';
-                    li.innerHTML = `<h2 class="article-title"><a href="${article.link}">${article.title}</a></h2><div class="article-date">${article.date}</div>`;
-                    list.appendChild(li);
-                });
-                
-                page++;
-                loading = false;
-                loadingEl.style.display = 'none';
-            }, 500);
+        async function loadArticles() {
+            try {
+                const resp = await fetch('articles.json');
+                allArticles = await resp.json();
+                // 按日期排序，最新的在前
+                allArticles.sort((a, b) => new Date(b.date) - new Date(a.date));
+                renderArticles();
+            } catch(e) {
+                console.log('加载文章失败', e);
+                document.getElementById('loading').textContent = '加载失败';
+            }
         }
         
-        // 滚动到底部时自动加载
+        function renderArticles() {
+            const start = (page - 1) * perPage;
+            const end = start + perPage;
+            const articles = allArticles.slice(start, end);
+            
+            if (articles.length === 0) {
+                hasMore = false;
+                document.getElementById('loading').textContent = '没有更多了';
+                return;
+            }
+            
+            const list = document.getElementById('articleList');
+            articles.forEach(article => {
+                const li = document.createElement('li');
+                li.className = 'article-item';
+                li.innerHTML = `<h2 class="article-title"><a href="${article.link}">${article.title}</a></h2><div class="article-date">${article.date}</div>`;
+                list.appendChild(li);
+            });
+            
+            page++;
+            if (end >= allArticles.length) {
+                hasMore = false;
+                document.getElementById('loading').textContent = '没有更多了';
+            }
+        }
+        
         window.addEventListener('scroll', () => {
+            if (!hasMore || loading) return;
             if (window.scrollY + window.innerHeight >= document.body.offsetHeight - 100) {
-                loadMore();
+                loading = true;
+                document.getElementById('loading').style.display = 'block';
+                setTimeout(() => {
+                    renderArticles();
+                    loading = false;
+                    document.getElementById('loading').style.display = 'none';
+                }, 300);
             }
         });
+        
+        loadArticles();
     </script>
 </body>
 </html>
