@@ -34,7 +34,6 @@
     
     async function loadArticles() {
         try {
-            // 获取_posts目录下的文件列表
             const response = await fetch('https://api.github.com/repos/' + GITHUB_REPO + '/contents/_posts?ref=main');
             
             if (!response.ok) {
@@ -44,39 +43,52 @@
             const files = await response.json();
             const articles = [];
             
-            // 获取每个MD文件的内容
             for (const f of files) {
                 if (f.name.endsWith('.md')) {
                     try {
                         const contentRes = await fetch(f.download_url);
                         const content = await contentRes.text();
                         
-                        // 提取title和date
-                        const titleMatch = content.match(/title:\s*"([^"]+)"/);
-                        const dateMatch = content.match(/date:\s*(\d{4}-\d{2}-\d{2})/);
+                        let title = '';
+                        let date = '';
                         
-                        if (titleMatch && dateMatch) {
-                            // 从文件名提取slug
-                            // 例如: 2026-04-09-宠物用品推荐2026.md -> 宠物用品推荐2026
+                        // 方式1: 尝试从front matter获取
+                        const fmTitleMatch = content.match(/title:\s*"([^"]+)"/);
+                        const fmDateMatch = content.match(/date:\s*(\d{4}-\d{2}-\d{2})/);
+                        
+                        if (fmTitleMatch) title = fmTitleMatch[1];
+                        if (fmDateMatch) date = fmDateMatch[1];
+                        
+                        // 方式2: 如果front matter没有，从HTML title获取
+                        if (!title) {
+                            const htmlTitleMatch = content.match(/<title>([^<]+)<\/title>/);
+                            if (htmlTitleMatch) title = htmlTitleMatch[1];
+                        }
+                        
+                        // 方式3: 从h1标签获取
+                        if (!title) {
+                            const h1Match = content.match(/<h1[^>]*>([^<]+)<\/h1>/);
+                            if (h1Match) title = h1Match[1];
+                        }
+                        
+                        if (title && date) {
                             const parts = f.name.replace('.md', '').split('-');
                             const slug = parts.length > 3 ? parts.slice(3).join('-') : f.name.replace('.md', '');
                             
                             articles.push({ 
-                                title: titleMatch[1], 
-                                date: dateMatch[1],
+                                title: title, 
+                                date: date,
                                 slug: slug
                             });
                         }
                     } catch (e) {
-                        console.log('Error reading file:', f.name, e);
+                        console.log('Error:', f.name, e);
                     }
                 }
             }
             
-            // 按日期排序
             articles.sort((a, b) => new Date(b.date) - new Date(a.date));
             
-            // 生成HTML
             if (articles.length > 0) {
                 const html = articles.map(a => `
                     <li class="article-item">
@@ -93,11 +105,10 @@
             
         } catch (e) {
             console.error('Error:', e);
-            document.getElementById('articles').innerHTML = '<p style="text-align:center;color:#999;">加载失败，请稍后重试</p>';
+            document.getElementById('articles').innerHTML = '<p style="text-align:center;color:#999;">加载失败</p>';
         }
     }
     
-    // 延迟加载确保页面先渲染
     setTimeout(loadArticles, 500);
     </script>
 </body>
