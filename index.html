@@ -3,103 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>柯基犬用品推荐 - SEO博客</title>
-    <meta name="description" content="专业柯基犬用品推荐博客，为您推荐优质柯基用品，分享养宠经验">
+    <title>柯基犬用品推荐 - 专业测评分享</title>
+    <meta name="description" content="专业柯基犬用品推荐，为您实测推荐优质柯基用品，解决柯基喂养问题">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #fafafa; }
-        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 60px 20px; text-align: center; }
-        .header h1 { font-size: 2.5rem; margin-bottom: 10px; }
-        .header p { opacity: 0.9; font-size: 1.1rem; }
-        .container { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #f5f5f5; color: #333; line-height: 1.6; }
+        .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+        h1 { text-align: center; padding: 40px 20px; font-size: 1.8rem; color: #333; }
         .article-list { list-style: none; }
-        .article-item { display: flex; background: white; border-radius: 12px; overflow: hidden; margin-bottom: 24px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); transition: transform 0.2s, box-shadow 0.2s; }
-        .article-item:hover { transform: translateY(-4px); box-shadow: 0 6px 20px rgba(0,0,0,0.12); }
-        .article-thumb { width: 240px; height: 180px; object-fit: cover; flex-shrink: 0; }
-        .article-content { padding: 20px 24px; display: flex; flex-direction: column; justify-content: center; }
-        .article-title { font-size: 1.25rem; color: #333; margin-bottom: 8px; font-weight: 600; }
+        .article-item { background: white; border-radius: 8px; padding: 20px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .article-title { font-size: 1.1rem; margin-bottom: 8px; }
         .article-title a { color: #333; text-decoration: none; }
-        .article-title a:hover { color: #667eea; }
-        .article-date { color: #999; font-size: 0.85rem; margin-bottom: 10px; }
-        .article-excerpt { color: #666; line-height: 1.6; font-size: 0.95rem; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-        .footer { text-align: center; padding: 40px; color: #999; font-size: 0.9rem; border-top: 1px solid #eee; margin-top: 40px; }
-        .disclaimer { background: #fff3cd; padding: 15px; border-radius: 8px; margin-bottom: 30px; font-size: 0.9rem; color: #856404; }
+        .article-title a:hover { color: #0066cc; }
+        .article-date { color: #999; font-size: 0.85rem; margin-bottom: 8px; }
+        .footer { text-align: center; padding: 30px; color: #999; font-size: 0.85rem; }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>柯基犬用品推荐</h1>
-        <p>专业测评，真实分享，帮助你挑选最适合柯基的好物</p>
-    </div>
     <div class="container">
-        <div class="disclaimer">
-            本网站包含京东联盟推广链接，点击购买可能会获得佣金，这有助于我们持续产出优质内容。
-        </div>
-        <div id="articles" class="article-list">
-            <div style="text-align:center;color:#999;">加载中...</div>
-        </div>
+        <h1>柯基犬用品推荐 - 专业测评分享</h1>
+        <div id="articles" class="article-list"></div>
     </div>
     <div class="footer">
-        <p>柯基犬用品推荐 - 专注于柯基用品的真实评测与推荐</p>
-        <p style="margin-top:10px;">如有侵权请联系删除</p>
+        <p>本文含推广链接，购买可获商家补贴</p>
     </div>
 
     <script>
-        const GITHUB_REPO = 'liujiawei8888/ljwTaoKe';
-        const API_BASE = 'https://api.github.com/repos/' + GITHUB_REPO + '/contents';
-        
-        async function loadArticles() {
-            try {
-                const container = document.getElementById('articles');
-                
-                // 尝试从GitHub获取文章列表
-                try {
-                    const response = await fetch(API_BASE + '/_posts');
-                    if (response.ok) {
-                        const files = await response.json();
-                        
-                        const articles = [];
-                        for (const f of files) {
-                            if (f.name.endsWith('.md')) {
-                                const parts = f.name.replace('.md', '').split('-');
-                                if (parts.length >= 4) {
-                                    const date = `${parts[0]}-${parts[1]}-${parts[2]}`;
-                                    const slug = parts.slice(3).join('-');
-                                    articles.push({ date, slug, name: f.name });
-                                }
-                            }
-                        }
-                        
-                        if (articles.length > 0) {
-                            articles.sort((a, b) => new Date(b.date) - new Date(a.date));
-                            container.innerHTML = articles.map(a => `
-                                <li class="article-item">
-                                    <img class="article-thumb" src="https://picsum.photos/240/180?random=${a.slug}" alt="${a.slug}">
-                                    <div class="article-content">
-                                        <h2 class="article-title">
-                                            <a href="/${a.slug}.html">${a.slug.replace(/-/g, ' ')}</a>
-                                        </h2>
-                                        <div class="article-date">${a.date}</div>
-                                        <div class="article-excerpt">点击查看全文，了解更多关于柯基犬用品的详细介绍和推荐...</div>
-                                    </div>
-                                </li>
-                            `).join('');
-                            return;
-                        }
+    const GITHUB_REPO = 'liujiawei8888/ljwTaoKe';
+    const BASE_URL = 'https://liujiawei8888.github.io/ljwTaoKe';
+    
+    async function loadArticles() {
+        try {
+            const response = await fetch('https://api.github.com/repos/' + GITHUB_REPO + '/contents/_posts');
+            const files = await response.json();
+            
+            const articles = [];
+            for (const f of files) {
+                if (f.name.endsWith('.md')) {
+                    const content = await fetch(f.download_url).then(r => r.text());
+                    const titleMatch = content.match(/title:\s*"([^"]+)"/);
+                    const dateMatch = content.match(/date:\s*(\d{4}-\d{2}-\d{2})/);
+                    
+                    if (titleMatch && dateMatch) {
+                        const parts = f.name.replace('.md', '').split('-');
+                        const slug = parts.slice(3).join('-');
+                        articles.push({ 
+                            title: titleMatch[1], 
+                            date: dateMatch[1],
+                            slug: slug
+                        });
                     }
-                } catch (e) {
-                    console.log('GitHub API失败:', e);
                 }
-                
-                // 如果没有文章，显示提示
-                container.innerHTML = '<div style="text-align:center;color:#999;padding:40px;">暂无文章，正在生成中...</div>';
-                
-            } catch (error) {
-                console.error(error);
-                document.getElementById('articles').innerHTML = '<div style="text-align:center;color:#999;">加载失败，请刷新重试</div>';
             }
+            
+            articles.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            const html = articles.map(a => `
+                <li class="article-item">
+                    <h2 class="article-title">
+                        <a href="${BASE_URL}/${a.slug}.html">${a.title}</a>
+                    </h2>
+                    <div class="article-date">${a.date}</div>
+                </li>
+            `).join('');
+            
+            document.getElementById('articles').innerHTML = html || '<p style="text-align:center;color:#999;">暂无文章</p>';
+            
+        } catch (e) {
+            document.getElementById('articles').innerHTML = '<p style="text-align:center;color:#999;">加载失败</p>';
         }
-        loadArticles();
+    }
+    loadArticles();
     </script>
 </body>
 </html>
