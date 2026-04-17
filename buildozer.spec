@@ -2,8 +2,9 @@
 title = SEO发布工具
 package.name = seopublish
 package.domain = org.seopublish
-source.include_exts = py,png,jpg,kv,atlas,json,html,csv,ttf
-source.include_patterns = *.py,*.kv,*.json,*.html,*.txt
+source.dir = .
+source.include_exts = py,png,jpg,kv,atlas,json,html,csv,ttf,pyc,txt,md
+source.include_patterns = *.py,*.kv,*.json,*.html,*.txt,*.md
 version = 1.0.0
 
 requirements = python3,kivy
