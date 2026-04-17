@@ -9,29 +9,23 @@ jobs:
         with:
           python-version: '3.9'
       
-      - name: Install Android SDK
+      - name: Install system deps
         run: |
           sudo apt-get update
-          sudo apt-get install -y wget unzip
-          mkdir -p android-sdk
-          cd android-sdk
-          wget -q https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O cmdtools.zip
-          unzip -q cmdtools.zip
-          mkdir -p cmdline-tools/latest
-          mv cmdline-tools/* cmdline-tools/latest/ 2>/dev/null || true
-          yes | cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null 2>&1 || true
-          cmdline-tools/latest/bin/sdkmanager "platforms;android-30" "build-tools;30.0.3" "ndk;21e"
-          echo "ANDROID_HOME=$PWD" >> $GITHUB_ENV
+          sudo apt-get install -y openjdk-17-jdk
       
       - name: Install Python deps
         run: pip install buildozer kivy cython pillow
       
       - name: Build APK
-        env:
-          ANDROID_HOME: ${{ github.workspace }}/android-sdk
-        run: buildozer android debug
+        run: |
+          export ANDROID_HOME="/opt/android-sdk"
+          export JAVA_HOME="/usr/lib/jvm/java-17-openjdk-amd64"
+          buildozer android debug
+        timeout-minutes: 60
       
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: apk
           path: bin/*.apk
