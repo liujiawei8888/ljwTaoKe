@@ -8,8 +8,29 @@ jobs:
       - uses: actions/setup-python@v4
         with:
           python-version: '3.9'
-      - run: pip install buildozer kivy cython pillow
-      - run: buildozer android debug
+      
+      - name: Install Android SDK
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget unzip
+          mkdir -p android-sdk
+          cd android-sdk
+          wget -q https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O cmdtools.zip
+          unzip -q cmdtools.zip
+          mkdir -p cmdline-tools/latest
+          mv cmdline-tools/* cmdline-tools/latest/ 2>/dev/null || true
+          yes | cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null 2>&1 || true
+          cmdline-tools/latest/bin/sdkmanager "platforms;android-30" "build-tools;30.0.3" "ndk;21e"
+          echo "ANDROID_HOME=$PWD" >> $GITHUB_ENV
+      
+      - name: Install Python deps
+        run: pip install buildozer kivy cython pillow
+      
+      - name: Build APK
+        env:
+          ANDROID_HOME: ${{ github.workspace }}/android-sdk
+        run: buildozer android debug
+      
       - uses: actions/upload-artifact@v4
         with:
           name: apk
