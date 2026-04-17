@@ -8,7 +8,7 @@ jobs:
       - uses: actions/setup-python@v4
         with:
           python-version: '3.9'
-      - run: pip install buildozer kivy
+      - run: pip install buildozer kivy cython pillow
       - run: buildozer android debug
       - uses: actions/upload-artifact@v4
         with:
