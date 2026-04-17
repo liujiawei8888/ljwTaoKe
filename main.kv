@@ -1,0 +1,91 @@
+#:kivy 2.0.0
+
+<WelcomeScreen>:
+    pass
+
+<MainScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 15
+        spacing: 10
+        
+        # 顶部标题
+        BoxLayout:
+            size_hint_y: None
+            height: 50
+            Label:
+                text: '🐾 SEO发布工具'
+                font_size: '20sp'
+                color: 0.2, 0.5, 0.8, 1
+        
+        # 站点选择
+        BoxLayout:
+            size_hint_y: None
+            height: 50
+            Label:
+                text: '站点:'
+                size_hint_x: 0.3
+            Spinner:
+                id: site_spinner
+                text: '选择站点'
+                size_hint_x: 0.7
+        
+        # 站点操作按钮
+        BoxLayout:
+            size_hint_y: None
+            height: 45
+            Button:
+                text: '➕ 添加'
+                on_press: root.add_site()
+            Button:
+                text: '✏️ 编辑'
+                on_press: root.edit_site()
+        
+        # 类目标签
+        Label:
+            id: category_label
+            text: '类目: 未设置'
+            size_hint_y: None
+            height: 30
+            color: 0.5, 0.5, 0.5, 1
+        
+        # 自动发布开关
+        BoxLayout:
+            size_hint_y: None
+            height: 45
+            Label:
+                text: '自动发布:'
+                size_hint_x: 0.5
+            Switch:
+                id: auto_switch
+                size_hint_x: 0.5
+                on_active: root.toggle_auto(self.active)
+        
+        # 发布按钮
+        Button:
+            id: publish_btn
+            text: '🚀 立即发布'
+            size_hint_y: None
+            height: 60
+            background_color: 0.9, 0.3, 0.2, 1
+            on_press: root.publish()
+        
+        # 状态标签
+        Label:
+            id: status_label
+            text: '就绪'
+            size_hint_y: None
+            height: 35
+            color: 0.2, 0.8, 0.2, 1
+        
+        # 日志区域
+        ScrollView:
+            size_hint_y: 1
+            Label:
+                id: log_label
+                text: '日志...'
+                text_size: self.width, None
+                size_hint_y: None
+                height: self.texture_size[1]
+                halign: 'left'
+                valign: 'top'
